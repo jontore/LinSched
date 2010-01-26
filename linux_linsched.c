@@ -25,6 +25,7 @@
 
 /* To support printing debugging and other messages to the console. */
 #include <stdio.h>
+#include <assert.h>
 /* linsched variables and functions */
 
 int __linsched_curr_cpu = 0;
@@ -124,7 +125,7 @@ struct task_struct *__linsched_create_task(void (*callback)(void))
  */
 void linsched_create_normal_task(void (*callback)(void), int niceval)
 {
-	struct sched_param params;
+	struct sched_param params = {};
 
 	/* If we cannot support any more tasks, return. */
 	if (curr_task_id >= LINSCHED_MAX_TASKS)
@@ -133,7 +134,7 @@ void linsched_create_normal_task(void (*callback)(void), int niceval)
 	/* Create "normal" task and set its nice value. */
 	__linsched_tasks[curr_task_id] = __linsched_create_task(callback);
 	params.sched_priority = 0;
-	sys_sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_NORMAL,
+	sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_NORMAL,
 			       &params);
 	set_user_nice(__linsched_tasks[curr_task_id], niceval);
 
@@ -150,7 +151,7 @@ void linsched_create_normal_task(void (*callback)(void), int niceval)
  */
 void linsched_create_batch_task(void (*callback)(void), int niceval)
 {
-	struct sched_param params;
+	struct sched_param params = {};
 
 	/* If we cannot support any more tasks, return. */
 	if (curr_task_id >= LINSCHED_MAX_TASKS)
@@ -159,7 +160,7 @@ void linsched_create_batch_task(void (*callback)(void), int niceval)
 	/* Create "batch" task and set its nice value. */
 	__linsched_tasks[curr_task_id] = __linsched_create_task(callback);
 	params.sched_priority = 0;
-	sys_sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_BATCH,
+	sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_BATCH,
 			       &params);
 	set_user_nice(__linsched_tasks[curr_task_id], niceval);
 
@@ -174,7 +175,7 @@ void linsched_create_batch_task(void (*callback)(void), int niceval)
 /* Create a FIFO real-time task with the specified callback and priority. */
 void linsched_create_RTfifo_task(void (*callback)(void), int prio)
 {
-	struct sched_param params;
+	struct sched_param params = {};
 
 	/* If we cannot support any more tasks, return. */
 	if (curr_task_id >= LINSCHED_MAX_TASKS)
@@ -183,7 +184,7 @@ void linsched_create_RTfifo_task(void (*callback)(void), int prio)
 	/* Create FIFO real-time task and set its priority. */
 	__linsched_tasks[curr_task_id] = __linsched_create_task(callback);
 	params.sched_priority = prio;
-	sys_sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_FIFO,
+	sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_FIFO,
 			       &params);
 
         /* Print message. */
@@ -197,7 +198,7 @@ void linsched_create_RTfifo_task(void (*callback)(void), int prio)
 /* Create a RR real-time task with the specified callback and priority. */
 void linsched_create_RTrr_task(void (*callback)(void), int prio)
 {
-	struct sched_param params;
+	struct sched_param params = {};
 
 	/* If we cannot support any more tasks, return. */
 	if (curr_task_id >= LINSCHED_MAX_TASKS)
@@ -206,8 +207,7 @@ void linsched_create_RTrr_task(void (*callback)(void), int prio)
 	/* Create RR real-time task and set its priority. */
 	__linsched_tasks[curr_task_id] = __linsched_create_task(callback);
 	params.sched_priority = prio;
-	sys_sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_RR,
-			       &params);
+	sched_setscheduler(__linsched_tasks[curr_task_id], SCHED_RR, &params);
 
         /* Print message. */
 	printf("Created RR real-time task 0x%x with priority %d.\n",
