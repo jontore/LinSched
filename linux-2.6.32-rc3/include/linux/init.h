@@ -40,9 +40,10 @@
 
 /* These are for everybody (although not all archs will actually
    discard it in modules) */
-#define __init		__section(.init.text) __cold notrace
-#define __initdata	__section(.init.data)
-#define __initconst	__section(.init.rodata)
+/* Next three lines modified by sqazi */
+#define __init		__section(.foo_init.text) __cold notrace
+#define __initdata	__section(.foo_init.data)
+#define __initconst	__section(.foo_init.rodata)
 #define __exitdata	__section(.exit.data)
 #define __exit_call	__used __section(.exitcall.exit)
 
